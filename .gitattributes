@@ -1,0 +1,170 @@
+# Based on the examples here:
+# https://github.com/alexkaratarakis/gitattributes
+# http://davidlaing.com/2012/09/19/customise-your-gitattributes-to-become-a-git-ninja/
+
+#
+# Common
+#
+
+# Documents
+*.bibtex    text diff=bibtex
+*.doc       binary diff=astextplain
+*.DOC       binary diff=astextplain
+*.docx      binary diff=astextplain
+*.DOCX      binary diff=astextplain
+*.dot       binary diff=astextplain
+*.DOT       binary diff=astextplain
+*.pdf       binary diff=astextplain
+*.PDF       binary diff=astextplain
+*.rtf       text diff=astextplain
+*.RTF       text diff=astextplain
+*.md        text diff=markdown
+*.mdx       text diff=markdown
+*.tex       text diff=tex
+*.adoc      text
+*.textile   text
+*.mustache  text
+*.csv       text
+*.tab       text
+*.tsv       text
+*.txt       text
+*.sql       text
+*.odt       binary diff=astextplain
+*.ods       binary diff=astextplain
+
+# Graphics
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.tif       binary
+*.tiff      binary
+*.ico       binary
+*.svg       binary
+*.eps       binary
+*.bmp       binary
+*.exr       binary
+*.hdr       binary
+*.iff       binary
+*.pict      binary
+*.tga       binary
+*.psd       binary
+
+# Scripts
+*.bash      text eol=lf
+*.fish      text eol=lf
+*.sh        text eol=lf
+*.zsh       text eol=lf
+# These are explicitly windows files and should use crlf
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Serialisation
+*.json      text
+*.toml      text
+*.xml       text
+*.yaml      text
+*.yml       text
+
+
+#
+# C# / Visual Studio
+#
+
+# Source code files
+*.cs        text diff=csharp
+
+# Visual Studio
+*.sln       text eol=crlf merge=binary
+*.csproj    text eol=crlf merge=binary
+*.vcxproj   text eol=crlf merge=binary
+*.vcproj    text eol=crlf merge=binary
+
+
+#
+# Unity
+#
+
+# Code files
+*.jslib     text
+*.cginc     text
+*.shader    text
+
+# Unity YAML
+*.mat                   text=auto merge=binary eol=lf
+*.anim                  text=auto merge=binary eol=lf
+*.unity                 text=auto merge=binary eol=lf
+*.prefab                text=auto merge=binary eol=lf
+*.asset                 text=auto merge=binary eol=lf
+*.meta                  text=auto merge=binary eol=lf
+*.controller            text=auto merge=binary eol=lf
+*.physicMaterial2D      text=auto merge=binary eol=lf
+*.physicMaterial        text=auto merge=binary eol=lf
+*.physicsMaterial2D     text=auto merge=binary eol=lf
+*.physicsMaterial       text=auto merge=binary eol=lf
+
+*.mat                   text=auto merge=binary eol=lf
+*.lighting              text=auto merge=binary eol=lf
+*.terrainlayer          text=auto merge=binary eol=lf
+*.inputactions          text=auto merge=binary eol=lf
+*.asmdef                text=auto merge=binary eol=lf
+*.asmref                text=auto merge=binary eol=lf
+
+*.cubemap               binary
+*.unitypackage          binary
+
+# 3D models
+*.3dm           binary
+*.3ds           binary
+*.blend         binary
+*.c4d           binary
+*.collada       binary
+*.dae           binary
+*.dxf           binary
+*.FBX           binary
+*.fbx           binary
+*.jas           binary
+*.lws           binary
+*.lxo           binary
+*.ma            binary
+*.max           binary
+*.mb            binary
+*.obj           binary
+*.ply           binary
+*.skp           binary
+*.stl           binary
+*.ztl           binary
+
+# Audio
+*.aif           binary
+*.aiff          binary
+*.it            binary
+*.mod           binary
+*.mp3           binary
+*.ogg           binary
+*.s3m           binary
+*.wav           binary
+*.xm            binary
+
+# Video
+*.asf           binary
+*.avi           binary
+*.flv           binary
+*.mov           binary
+*.mp4           binary
+*.mpeg          binary
+*.mpg           binary
+*.ogv           binary
+*.wmv           binary
+
+# Fonts
+*.otf           binary
+*.ttf           binary
+
+
+#
+# Misc files
+#
+*.gitattributes text
+*.gitignore     text

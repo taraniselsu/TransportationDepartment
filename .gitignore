@@ -1,0 +1,33 @@
+# From "MASTERING UNITY PROJECT FOLDER STRUCTURE - VERSION CONTROL SYSTEMS"
+# http://unity3d.com/learn/tutorials/modules/beginner/architecture/folders-in-version-control
+
+# Also see "Using External Version Control Systems with Unity"
+# http://docs.unity3d.com/Manual/ExternalVersionControlSystemSupport.html
+# and https://github.com/github/gitignore/blob/main/Unity.gitignore
+
+# Unity generated
+Builds/
+Library/
+Logs/
+obj/
+# Temp/ -- Do not ignore all Temp folders, only the one in the Unity folder (see the .gitignore file there)
+UserSettings/
+*.csproj
+*.sln
+
+# Visual Studio / MonoDevelop generated
+.vs/
+*.suo
+*.user
+.vsconfig
+
+# LibreOffice
+*.odt#
+*.ods#
+
+# Other
+Thumbs.db*
+*.blend1
+*.blend1.meta
+build.log
+package.log

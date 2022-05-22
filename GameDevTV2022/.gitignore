@@ -1,0 +1,2 @@
+# Only ignore the Temp folder that is a child of this folder
+/Temp/
