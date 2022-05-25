@@ -4,34 +4,51 @@ using UnityEngine;
 
 public class Train : MonoBehaviour
 {
-    [SerializeField, Range(-5f, 5f)] private float speed = 0;
+    [SerializeField, Range(-20f, 20f)] private float speed = 0;
 
-    private readonly List<Vector3> allWaypoints = new();
+    private readonly List<Transform> allWaypoints = new();
 
     private void Start()
     {
         GetAllWaypoints();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (Mathf.Abs(speed) < 0.1f)
             return;
 
-        Vector3 temp = transform.position + speed * Time.fixedDeltaTime * transform.forward;
+        Vector3 temp = transform.position + speed * Time.deltaTime * transform.forward;
 
-        CompareDistances comparer = new() { reference = temp };
+        WaypointComparer comparer = new() { reference = temp };
         allWaypoints.Sort(comparer);
 
-        Vector3 v1 = allWaypoints.First(w => Vector3.Dot(w - transform.position, transform.forward) > 0f);
-        Vector3 v2 = allWaypoints.First(w => Vector3.Dot(w - transform.position, transform.forward) < 0f);
-        Vector3 newPos = ClosestPointOnLine(temp, v1, v2);
+        Transform w1 = allWaypoints.First(w => Vector3.Dot(w.position - temp, transform.forward) < 0f);
+        Transform w2 = allWaypoints.First(w => Vector3.Dot(w.position - temp, transform.forward) > 0f);
 
-        Vector3 dir = (newPos - transform.position).normalized;
-        Quaternion q = Quaternion.LookRotation(dir, Vector3.up);
+        Vector3 relPos = temp - w1.position;
+        Vector3 lineSegment = w2.position - w1.position;
+        Vector3 lineDir = lineSegment.normalized;
+        float dot = Vector3.Dot(relPos, lineDir);
 
-        transform.position = newPos;
-        transform.rotation = q;
+        float t = dot / lineSegment.magnitude;
+
+        Quaternion startRot = w1.rotation;
+        if (Mathf.Abs(Quaternion.Angle(transform.rotation, startRot)) > 100f)
+        {
+            startRot = Quaternion.AngleAxis(180f, Vector3.up) * startRot;
+        }
+
+        Quaternion endRot = w2.rotation;
+        if (Mathf.Abs(Quaternion.Angle(transform.rotation, endRot)) > 100f)
+        {
+            endRot = Quaternion.AngleAxis(180f, Vector3.up) * endRot;
+        }
+
+        transform.position = w1.position + dot * lineDir;
+        transform.rotation = Quaternion.Slerp(startRot, endRot, t);
+
+        Debug.LogFormat(this, "dot = {0:f3}   t = {1:f3}", dot, t);
     }
 
     private void GetAllWaypoints()
@@ -43,7 +60,7 @@ public class Train : MonoBehaviour
         {
             foreach (Transform child in wc.transform)
             {
-                allWaypoints.Add(child.position);
+                allWaypoints.Add(child);
             }
         }
     }
@@ -57,14 +74,14 @@ public class Train : MonoBehaviour
         return result;
     }
 
-    private struct CompareDistances : IComparer<Vector3>
+    private struct WaypointComparer : IComparer<Transform>
     {
         public Vector3 reference;
 
-        public int Compare(Vector3 left, Vector3 right)
+        public int Compare(Transform left, Transform right)
         {
-            float leftDistance = (left - reference).sqrMagnitude;
-            float rightDistance = (right - reference).sqrMagnitude;
+            float leftDistance = (left.position - reference).sqrMagnitude;
+            float rightDistance = (right.position - reference).sqrMagnitude;
             return leftDistance.CompareTo(rightDistance);
         }
     }
@@ -74,20 +91,24 @@ public class Train : MonoBehaviour
         if (allWaypoints.Count < 2)
             return;
 
-        CompareDistances comparer = new() { reference = transform.position };
+        WaypointComparer comparer = new() { reference = transform.position };
         allWaypoints.Sort(comparer);
 
-        Vector3 v1 = allWaypoints.First(w => Vector3.Dot(w - transform.position, transform.forward) > 0f);
-        Vector3 v2 = allWaypoints.First(w => Vector3.Dot(w - transform.position, transform.forward) < 0f);
-        Vector3 p = ClosestPointOnLine(transform.position, v1, v2);
+        Transform w1 = allWaypoints.First(w => Vector3.Dot(w.position - transform.position, transform.forward) > 0f);
+        Transform w2 = allWaypoints.First(w => Vector3.Dot(w.position - transform.position, transform.forward) < 0f);
+        Vector3 p = ClosestPointOnLine(transform.position, w1.position, w2.position);
 
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, v1);
-        Gizmos.DrawLine(transform.position, v2);
-        Gizmos.DrawSphere(v1, 0.25f);
-        Gizmos.DrawSphere(v2, 0.25f);
+        Gizmos.DrawLine(transform.position, w1.position);
+        Gizmos.DrawLine(transform.position, w2.position);
+        Gizmos.DrawSphere(w1.position, 0.25f);
+        Gizmos.DrawSphere(w2.position, 0.25f);
 
         Gizmos.color = new Color(0.5f, 1f, 0.5f);
         Gizmos.DrawSphere(p, 0.25f);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(w1.position, w1.forward);
+        Gizmos.DrawRay(w2.position, w2.forward);
     }
 }
