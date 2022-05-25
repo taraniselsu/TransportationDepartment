@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Train : MonoBehaviour
@@ -14,13 +15,16 @@ public class Train : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (Mathf.Abs(speed) < 0.1f)
+            return;
+
         Vector3 temp = transform.position + speed * Time.fixedDeltaTime * transform.forward;
 
         CompareDistances comparer = new() { reference = temp };
         allWaypoints.Sort(comparer);
 
-        Vector3 v1 = allWaypoints[0];
-        Vector3 v2 = allWaypoints[1];
+        Vector3 v1 = allWaypoints.First(w => Vector3.Dot(w - transform.position, transform.forward) > 0f);
+        Vector3 v2 = allWaypoints.First(w => Vector3.Dot(w - transform.position, transform.forward) < 0f);
         Vector3 newPos = ClosestPointOnLine(temp, v1, v2);
 
         Vector3 dir = (newPos - transform.position).normalized;
@@ -44,6 +48,15 @@ public class Train : MonoBehaviour
         }
     }
 
+    public static Vector3 ClosestPointOnLine(Vector3 pos, Vector3 start, Vector3 end)
+    {
+        Vector3 v = pos - start;
+        Vector3 lineDir = (end - start).normalized;
+        float dot = Vector3.Dot(v, lineDir);
+        Vector3 result = start + dot * lineDir;
+        return result;
+    }
+
     private struct CompareDistances : IComparer<Vector3>
     {
         public Vector3 reference;
@@ -58,16 +71,14 @@ public class Train : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        //GetAllWaypoints();
-
         if (allWaypoints.Count < 2)
             return;
 
         CompareDistances comparer = new() { reference = transform.position };
         allWaypoints.Sort(comparer);
 
-        Vector3 v1 = allWaypoints[0];
-        Vector3 v2 = allWaypoints[1];
+        Vector3 v1 = allWaypoints.First(w => Vector3.Dot(w - transform.position, transform.forward) > 0f);
+        Vector3 v2 = allWaypoints.First(w => Vector3.Dot(w - transform.position, transform.forward) < 0f);
         Vector3 p = ClosestPointOnLine(transform.position, v1, v2);
 
         Gizmos.color = Color.green;
@@ -78,14 +89,5 @@ public class Train : MonoBehaviour
 
         Gizmos.color = new Color(0.5f, 1f, 0.5f);
         Gizmos.DrawSphere(p, 0.25f);
-    }
-
-    public static Vector3 ClosestPointOnLine(Vector3 pos, Vector3 start, Vector3 end)
-    {
-        Vector3 v = pos - start;
-        Vector3 lineDir = (end - start).normalized;
-        float dot = Vector3.Dot(v, lineDir);
-        Vector3 result = start + dot * lineDir;
-        return result;
     }
 }
