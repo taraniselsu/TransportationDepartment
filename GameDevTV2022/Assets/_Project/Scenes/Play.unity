@@ -1186,7 +1186,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.6, y: 1}
+    m_SensorSize: {x: 1.8286779, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1337,14 +1337,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b94e0fee1d1a144a2d846d42d1a2a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  departmentNamesFile: {fileID: 4900000, guid: fe53c66e787c81545a973cd4da34f839, type: 3}
+  levelDefinition: {fileID: 11400000, guid: e9735d285433c844fa46bc2b83bcd7cb, type: 2}
   departmentPrefab: {fileID: 7957718754298695845, guid: accb5e5c3e758b049b7fb4f2927f7725,
     type: 3}
-  numDepartments: 3
   gridSize: 18
-  bounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 6, y: 0, z: 6}
 --- !u!4 &708350418
 Transform:
   m_ObjectHideFlags: 0
@@ -2910,7 +2906,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.6, y: 1}
+    m_SensorSize: {x: 1.8286779, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
