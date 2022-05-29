@@ -16,9 +16,10 @@ public class DepartmentSpawner : MonoBehaviour
 
             GameObject go = Instantiate(departmentPrefab, position, rotation);
             go.name = department.name;
+            go.GetComponentInChildren<Canvas>().transform.rotation = Quaternion.Euler(89f, 0, 0);
             go.GetComponentInChildren<TextMeshProUGUI>().text = department.name;
 
-            Debug.LogFormat(this, "Spawning {0} at {1} facing {2}", department.name, position, department.direction);
+            Debug.LogFormat(this, "Spawning '{0}' at {1} facing {2}", department.name, position, department.direction);
         }
     }
 }
