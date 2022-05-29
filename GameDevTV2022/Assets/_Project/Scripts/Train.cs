@@ -10,7 +10,6 @@ public class Train : MonoBehaviour
 
     private void Start()
     {
-        GetAllWaypoints();
     }
 
     private void Update()
@@ -20,6 +19,7 @@ public class Train : MonoBehaviour
 
         Vector3 temp = transform.position + speed * Time.deltaTime * transform.forward;
 
+        GetAllWaypoints();
         WaypointComparer comparer = new() { reference = temp };
         allWaypoints.Sort(comparer);
 
@@ -48,7 +48,7 @@ public class Train : MonoBehaviour
         transform.position = w1.position + dot * lineDir;
         transform.rotation = Quaternion.Slerp(startRot, endRot, t);
 
-        Debug.LogFormat(this, "dot = {0:f3}   t = {1:f3}", dot, t);
+        //Debug.LogFormat(this, "dot = {0:f3}   t = {1:f3}", dot, t);
     }
 
     private void GetAllWaypoints()
