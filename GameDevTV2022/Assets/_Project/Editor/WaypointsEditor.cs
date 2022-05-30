@@ -43,6 +43,7 @@ public class WaypointsEditor : Editor
         go.transform.SetParent(parent);
         go.transform.localPosition = position;
         go.transform.localRotation = Quaternion.LookRotation(normal, Vector3.up);
+        go.AddComponent<Waypoint>();
     }
 
     private static void DeleteAllChildren(Transform transform)
