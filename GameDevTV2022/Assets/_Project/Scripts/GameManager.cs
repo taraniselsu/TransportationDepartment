@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float gridSize = 18f;
     [SerializeField] private LevelDefinition[] levelDefinitions;
     [SerializeField] private Department departmentPrefab;
+    [SerializeField] private Train train;
+
+    [Header("TESTING")]
+    [SerializeField] private int initialLevel = 0;
 
     public readonly GameData gameData = new();
 
@@ -27,7 +31,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        SpawnLevel(0);
+        SpawnLevel(initialLevel);
     }
 
     private void SpawnLevel(int level)
@@ -40,6 +44,7 @@ public class GameManager : MonoBehaviour
         LevelDefinition levelDefinition = levelDefinitions[level];
 
         SpawnDepartments(levelDefinition);
+        SpawnTrain(levelDefinition);
     }
 
     private void SpawnDepartments(LevelDefinition levelDefinition)
@@ -59,5 +64,12 @@ public class GameManager : MonoBehaviour
 
             Debug.LogFormat(this, "Spawning '{0}' at {1} facing {2}", department.name, department.transform.position, department.transform.rotation.eulerAngles);
         }
+    }
+
+    private void SpawnTrain(LevelDefinition levelDefinition)
+    {
+        train.transform.position = new(levelDefinition.trainStartingPosition.x * gridSize, 0, levelDefinition.trainStartingPosition.y * gridSize);
+        train.transform.rotation = Quaternion.Euler(0, 90f * (int)levelDefinition.trainStartingDirection, 0);
+        train.Speed = 0;
     }
 }

@@ -8,9 +8,7 @@ public class Train : MonoBehaviour
 
     private readonly List<Transform> allWaypoints = new();
 
-    private void Start()
-    {
-    }
+    public float Speed { get => speed; set => speed = value; }
 
     private void Update()
     {

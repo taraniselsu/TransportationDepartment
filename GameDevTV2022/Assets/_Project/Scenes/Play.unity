@@ -4774,6 +4774,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 00abbea87b7e49348b3aa5e6edfde12f, type: 2}
   departmentPrefab: {fileID: 9128853212017356725, guid: accb5e5c3e758b049b7fb4f2927f7725,
     type: 3}
+  train: {fileID: 1955648852}
+  initialLevel: 0
 --- !u!4 &1939150937
 Transform:
   m_ObjectHideFlags: 0
@@ -4808,7 +4810,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1955648851
 Transform:
   m_ObjectHideFlags: 0
@@ -4840,7 +4842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c00cf0163b1be4fbdb9c9e05bfe5cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  speed: 0
 --- !u!1001 &1956011045
 PrefabInstance:
   m_ObjectHideFlags: 0

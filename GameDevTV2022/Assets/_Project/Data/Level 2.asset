@@ -28,3 +28,5 @@ MonoBehaviour:
       Needles'
     position: {x: 2, y: -2}
     direction: 2
+  trainStartingPosition: {x: 0, y: 1}
+  trainStartingDirection: 2
