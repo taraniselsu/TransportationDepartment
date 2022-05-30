@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: Level 2
   m_EditorClassIdentifier: 
   departments:
-  - name: Department of Bees
-    position: {x: -5, y: -5}
-    direction: 0
-  - name: Department of Baby Showers
-    position: {x: 3, y: 2}
-    direction: 2
-  - name: Department of Flattening
-    position: {x: 1, y: -3}
+  - name: 'Department of
+
+      Flattening'
+    position: {x: -2, y: 2}
     direction: 3
+  - name: 'Department of
+
+      Twisting'
+    position: {x: 0, y: 1}
+    direction: 1
+  - name: 'Department of
+
+      Needles'
+    position: {x: 2, y: -2}
+    direction: 2

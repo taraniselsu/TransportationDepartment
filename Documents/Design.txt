@@ -1,0 +1,47 @@
+GameData
+- current level
+- departments
+- track sections
+- the train path, if found one
+    - list of waypoints  (or track sections, which have a list of waypoints?)
+
+
+- currently selected track section
+
+
+GameManager
+* handles spawning stuff for the current level
+* handles moving from level to level
+* 
+
+
+
+Periodically or after placing/removing a track section
+- starting from one department, find a path to each other department
+- merge those paths? to create one path
+- if found, start moving the train along the path
+- 
+
+
+
+
+TODO
+- find a route that goes by each department, if any
+- drive the train along the route, stopping at each department to pick up souls
+- spawn souls at each department
+- have souls board the train when it is stopped at the platform
+- show buttons for each track type along bottom of the screen
+    - buttons change which type would be placed
+    - also have a button to remove track
+- 
+
+- if a route is found
+    - complete the level
+        - award points based on how long the route is compared to an optimal route?
+    - allow the player to move to the next level
+
+- play instructions
+- credits
+
+
+

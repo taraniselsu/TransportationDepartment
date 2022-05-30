@@ -1,67 +1,96 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class TrackBuilder : MonoBehaviour
 {
+    public enum State { Placing, Deleting, None }
+
     [SerializeField] private Camera theCamera;
-    [SerializeField] private GameObject[] trackPrefabs;
-    [SerializeField] private float gridSize = 18f;
+    [SerializeField] private TrackSection[] trackPrefabs;
 
     private readonly Plane groundPlane = new(Vector3.up, 0);
 
     private int selectedTrackType = -1;
-    private GameObject selectedObject = null;
+    private TrackSection selectedObject = null;
+    private State state = State.None;
+
+    private GameData gameData;
+    private float gridSize;
+
+    private void Start()
+    {
+        GameManager gameManager = GameManager.Instance;
+        gameData = gameManager.gameData;
+        gridSize = gameManager.GridSize;
+    }
 
     private void Update()
     {
         Keyboard keyboard = Keyboard.current;
         if (keyboard.digit1Key.wasPressedThisFrame)
         {
-            SelectTrack(0);
+            SelectStraightTrack();
         }
         if (keyboard.digit2Key.wasPressedThisFrame)
         {
-            SelectTrack(1);
+            SelectCurvedTrack();
+        }
+        if (keyboard.digit3Key.wasPressedThisFrame)
+        {
+            RemoveMode();
         }
         if (keyboard.rKey.wasPressedThisFrame)
         {
-            selectedObject.transform.Rotate(0, 90f, 0);
+            Rotate();
         }
-        if (keyboard.escapeKey.wasPressedThisFrame)
+        if (keyboard.escapeKey.wasPressedThisFrame || keyboard.digit0Key.wasPressedThisFrame)
         {
             UnselectTrack();
         }
 
-        Mouse mouse = Mouse.current;
-        Ray ray = theCamera.ScreenPointToRay(mouse.position.ReadValue());
-        if (groundPlane.Raycast(ray, out float distance))
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            Vector3 point = ray.GetPoint(distance);
-            Vector3 gridCoord = new(
-                Mathf.RoundToInt(point.x / gridSize) * gridSize,
-                0,
-                Mathf.RoundToInt(point.z / gridSize) * gridSize);
-
-            if (selectedObject)
+            Mouse mouse = Mouse.current;
+            Ray ray = theCamera.ScreenPointToRay(mouse.position.ReadValue());
+            if (groundPlane.Raycast(ray, out float distance))
             {
-                selectedObject.transform.position = gridCoord;
+                Vector3 point = ray.GetPoint(distance);
+                Vector3 gridCoord = new(
+                    Mathf.RoundToInt(point.x / gridSize) * gridSize,
+                    0,
+                    Mathf.RoundToInt(point.z / gridSize) * gridSize);
+
+                if (state == State.Placing)
+                {
+                    selectedObject.transform.position = gridCoord;
+                }
 
                 if (mouse.leftButton.wasPressedThisFrame)
                 {
-                    //Debug.LogFormat(this, "Clicked at {0} which is grid square {1}", point, gridCoord);
-
-                    GameObject newTrack = Instantiate(selectedObject);
-                    newTrack.transform.SetParent(transform);
-                    newTrack.transform.position = gridCoord;
-                }
-            }
-            else if (keyboard.deleteKey.wasPressedThisFrame)
-            {
-                foreach (Transform child in transform)
-                {
-                    if (child.position == gridCoord)
+                    if (state == State.Placing)
                     {
-                        Destroy(child.gameObject);
+                        TrackSection newTrack = Instantiate(selectedObject, selectedObject.transform.position, selectedObject.transform.rotation);
+                        gameData.track.Add(newTrack);
+                    }
+                    else if (state == State.Deleting)
+                    {
+                        List<TrackSection> tracksToDelete = new();
+
+                        foreach (TrackSection trackSection in gameData.track)
+                        {
+                            if (trackSection.transform.position == gridCoord)
+                            {
+                                tracksToDelete.Add(trackSection);
+                            }
+                        }
+
+                        foreach (TrackSection trackSection in tracksToDelete)
+                        {
+                            gameData.track.Remove(trackSection);
+                            Destroy(trackSection.gameObject);
+                        }
                     }
                 }
             }
@@ -77,15 +106,41 @@ public class TrackBuilder : MonoBehaviour
             selectedTrackType = index;
             selectedObject = Instantiate(trackPrefabs[selectedTrackType]);
         }
+        state = State.Placing;
     }
 
-    private void UnselectTrack()
+    public void UnselectTrack()
     {
         if (selectedObject)
         {
-            Destroy(selectedObject);
+            Destroy(selectedObject.gameObject);
             selectedObject = null;
             selectedTrackType = -1;
         }
+        state = State.None;
+    }
+
+    public void SelectStraightTrack()
+    {
+        SelectTrack(0);
+    }
+
+    public void SelectCurvedTrack()
+    {
+        SelectTrack(1);
+    }
+
+    public void Rotate()
+    {
+        if (selectedObject)
+        {
+            selectedObject.transform.Rotate(0, 90f, 0);
+        }
+    }
+
+    public void RemoveMode()
+    {
+        UnselectTrack();
+        state = State.Deleting;
     }
 }
