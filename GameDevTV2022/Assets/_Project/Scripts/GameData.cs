@@ -7,5 +7,7 @@ public class GameData
     public int currentLevel = 0;
     public readonly List<Department> departments = new();
     public readonly List<TrackSection> track = new();
+
+    public int nextWaypoint = 0;
     public readonly List<Waypoint> trainRoute = new();
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,6 +19,8 @@ public class TrackBuilder : MonoBehaviour
 
     private GameData gameData;
     private float gridSize;
+
+    public event Action OnTrackChanged;
 
     private void Start()
     {
@@ -73,6 +76,7 @@ public class TrackBuilder : MonoBehaviour
                     {
                         TrackSection newTrack = Instantiate(selectedObject, selectedObject.transform.position, selectedObject.transform.rotation);
                         gameData.track.Add(newTrack);
+                        OnTrackChanged?.Invoke();
                     }
                     else if (state == State.Deleting)
                     {
@@ -86,10 +90,15 @@ public class TrackBuilder : MonoBehaviour
                             }
                         }
 
-                        foreach (TrackSection trackSection in tracksToDelete)
+                        if (tracksToDelete.Count > 0)
                         {
-                            gameData.track.Remove(trackSection);
-                            Destroy(trackSection.gameObject);
+                            foreach (TrackSection trackSection in tracksToDelete)
+                            {
+                                gameData.track.Remove(trackSection);
+                                Destroy(trackSection.gameObject);
+                            }
+
+                            OnTrackChanged?.Invoke();
                         }
                     }
                 }

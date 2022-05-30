@@ -1,30 +1,61 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Train : MonoBehaviour
 {
     [SerializeField, Range(-20f, 20f)] private float speed = 0;
 
-    private readonly List<Transform> allWaypoints = new();
+    private GameData gameData = null;
 
     public float Speed { get => speed; set => speed = value; }
+
+    private void Start()
+    {
+        gameData = GameManager.Instance.gameData;
+    }
 
     private void Update()
     {
         if (Mathf.Abs(speed) < 0.1f)
             return;
 
-        Vector3 temp = transform.position + speed * Time.deltaTime * transform.forward;
+        Vector3 position = Move();
+        Rotate(position);
+    }
 
-        GetAllWaypoints();
-        WaypointComparer comparer = new() { reference = temp };
-        allWaypoints.Sort(comparer);
+    private Vector3 Move()
+    {
+        Vector3 currentPosition = transform.position;
+        float moveDistance = speed * Time.deltaTime;
+        while (moveDistance > 0)
+        {
+            Vector3 nextWaypointPosition = gameData.trainRoute[gameData.nextWaypoint].transform.position;
+            Vector3 delta = nextWaypointPosition - currentPosition;
+            float distance = delta.magnitude;
 
-        Transform w1 = allWaypoints.First(w => Vector3.Dot(w.position - temp, transform.forward) < 0f);
-        Transform w2 = allWaypoints.First(w => Vector3.Dot(w.position - temp, transform.forward) > 0f);
+            if (distance > moveDistance)
+            {
+                currentPosition += moveDistance * delta.normalized;
+                break;
+            }
+            else
+            {
+                currentPosition = nextWaypointPosition;
+                moveDistance -= distance;
+                gameData.nextWaypoint = (gameData.nextWaypoint + 1) % gameData.trainRoute.Count;
+            }
+        }
 
-        Vector3 relPos = temp - w1.position;
+        transform.position = currentPosition;
+        return currentPosition;
+    }
+
+    private void Rotate(Vector3 currentPosition)
+    {
+        int previousWaypoint = gameData.nextWaypoint > 0 ? gameData.nextWaypoint - 1 : gameData.trainRoute.Count - 1;
+        Transform w1 = gameData.trainRoute[previousWaypoint].transform;
+        Transform w2 = gameData.trainRoute[gameData.nextWaypoint].transform;
+
+        Vector3 relPos = currentPosition - w1.position;
         Vector3 lineSegment = w2.position - w1.position;
         Vector3 lineDir = lineSegment.normalized;
         float dot = Vector3.Dot(relPos, lineDir);
@@ -43,70 +74,18 @@ public class Train : MonoBehaviour
             endRot = Quaternion.AngleAxis(180f, Vector3.up) * endRot;
         }
 
-        transform.position = w1.position + dot * lineDir;
         transform.rotation = Quaternion.Slerp(startRot, endRot, t);
-
-        //Debug.LogFormat(this, "dot = {0:f3}   t = {1:f3}", dot, t);
-    }
-
-    private void GetAllWaypoints()
-    {
-        allWaypoints.Clear();
-
-        var allWaypointContainers = FindObjectsOfType<Waypoints>();
-        foreach (var wc in allWaypointContainers)
-        {
-            foreach (Transform child in wc.transform)
-            {
-                allWaypoints.Add(child);
-            }
-        }
-    }
-
-    public static Vector3 ClosestPointOnLine(Vector3 pos, Vector3 start, Vector3 end)
-    {
-        Vector3 v = pos - start;
-        Vector3 lineDir = (end - start).normalized;
-        float dot = Vector3.Dot(v, lineDir);
-        Vector3 result = start + dot * lineDir;
-        return result;
-    }
-
-    private struct WaypointComparer : IComparer<Transform>
-    {
-        public Vector3 reference;
-
-        public int Compare(Transform left, Transform right)
-        {
-            float leftDistance = (left.position - reference).sqrMagnitude;
-            float rightDistance = (right.position - reference).sqrMagnitude;
-            return leftDistance.CompareTo(rightDistance);
-        }
     }
 
     private void OnDrawGizmos()
     {
-        if (allWaypoints.Count < 2)
-            return;
+        if (gameData != null && gameData.trainRoute.Count > 0)
+        {
+            Vector3 nextWaypointPosition = gameData.trainRoute[gameData.nextWaypoint].transform.position;
 
-        WaypointComparer comparer = new() { reference = transform.position };
-        allWaypoints.Sort(comparer);
-
-        Transform w1 = allWaypoints.First(w => Vector3.Dot(w.position - transform.position, transform.forward) > 0f);
-        Transform w2 = allWaypoints.First(w => Vector3.Dot(w.position - transform.position, transform.forward) < 0f);
-        Vector3 p = ClosestPointOnLine(transform.position, w1.position, w2.position);
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, w1.position);
-        Gizmos.DrawLine(transform.position, w2.position);
-        Gizmos.DrawSphere(w1.position, 0.25f);
-        Gizmos.DrawSphere(w2.position, 0.25f);
-
-        Gizmos.color = new Color(0.5f, 1f, 0.5f);
-        Gizmos.DrawSphere(p, 0.25f);
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(w1.position, w1.forward);
-        Gizmos.DrawRay(w2.position, w2.forward);
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, nextWaypointPosition);
+            Gizmos.DrawSphere(nextWaypointPosition, 0.25f);
+        }
     }
 }
